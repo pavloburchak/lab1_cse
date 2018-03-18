@@ -19,7 +19,8 @@ def download_mp3(link):
     if link.endswith('.mp3'):
         r = requests.get(link, allow_redirects=True)
         filename = get_filename_from_cd(r.headers.get('content-disposition'))
-        open(filename, 'wb').write(r.content)
+        if(filename != None):
+            open(filename, 'wb').write(r.content)
         
 
 def get_urls(url, i):
