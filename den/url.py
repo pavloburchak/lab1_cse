@@ -4,10 +4,22 @@ import re
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 
-def download_mp3(link)
-    if link.endswith('.mp3')
+def get_filename_from_cd(cd):
+    """
+    Get filename from content-disposition
+    """
+    if not cd:
+        return None
+    fname = re.findall('filename=(.+)', cd)
+    if len(fname) == 0:
+        return None
+    return fname[0]
+
+def download_mp3(link):
+    if link.endswith('.mp3'):
         r = requests.get(link, allow_redirects=True)
-        open(link + '.mp3', 'wb').write(r.content)
+        filename = get_filename_from_cd(r.headers.get('content-disposition'))
+        open(filename, 'wb').write(r.content)
         
 
 def get_urls(url, i):
