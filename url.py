@@ -1,22 +1,13 @@
 from lxml import html
 import requests
 import re
+import os
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
+from mutagen.id3 import ID3
 
 
-def save_defined_file(filename, year):
-    if(filename is not None):
-        open(filename, 'wb').write(r.content)
-        audio = ID3(filename)
-        if(audio["TDRC"] <= year):
-            os.remove(filename)
-
-
-def get_filename_from_cd(cd):
-    """
-    Get filename from content-disposition
-    """
+def get_filename(cd):
     if not cd:
         return None
     fname = re.findall('filename=(.+)', cd)
@@ -25,14 +16,24 @@ def get_filename_from_cd(cd):
     return fname[0]
 
 
-def download_mp3(link):
+def save_defined_file(filename, year, r):
+    open(filename, 'wb').write(r.content)
+    audio = ID3(filename)
+    print(audio["TDRC"], filename, "\n")
+    if(int(str(audio["TDRC"])) <= year):
+        os.remove(filename)
+
+
+def download_mp3(link, year):
     if link.endswith('.mp3'):
         r = requests.get(link, allow_redirects=True)
-        filename = get_filename_from_cd(r.headers.get('content-disposition'))
-        save_defined_file(filename, 2015)
+        filename = get_filename(r.headers.get('content-disposition'))
+        if filename is None:
+            filename = link.rsplit('/', 1)[1]
+        save_defined_file(filename, year, r)
 
 
-def get_urls(url, i):
+def get_urls(url, i, year):
     page = requests.get(url)
     webpage = html.fromstring(page.content)
     for link in webpage.xpath('//a/@href'):
@@ -44,13 +45,13 @@ def get_urls(url, i):
                 domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
                 get_urls(domain+link, i-1)
         else:
-            download_mp3(link)
+            download_mp3(link, year)
     return
 
 
-tree = ET.parse('ulr.xml')
+tree = ET.parse('url.xml')
 root = tree.getroot()
 depth = int(root.find('depth').text)
-print(depth)
+year = int(root.find('year').text)
 for url in tree.find('urls').findall('url'):
-    get_urls(url.text.strip(), depth)
+    get_urls(url.text.strip(), depth, year)
