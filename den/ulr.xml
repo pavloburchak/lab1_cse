@@ -2,13 +2,10 @@
 <content>
   <urls>
     <url>
-      https://progbase.herokuapp.com/
+      http://zk.fm/mp3/search?keywords=%D0%B3%D0%BE%D0%B2%D0%BD%D0%BE
     </url>
     <url>
-      http://gdk-kpi.herokuapp.com/
-    </url>
-    <url>
-      http://www.scs.kpi.ua/uk/content/zavdannya-na-laboratornu-robotu-z-disciplini-komponenti-pz-dlya-grup-kp-61-kp-62
+      http://mp3cc.com/search/f/%D0%BF%D0%B8%D1%82%D0%BE%D0%BD/
     </url>
   </urls>
   <depth>
