@@ -4,6 +4,13 @@ import re
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 
+def save_defined_file(filename, year):
+    if(filename !=  None):
+        open(filename, 'wb').write(r.content)
+        audio = ID3(filename)
+        if(audio["TDRC"] <= year):
+            os.remove(filename)
+
 def get_filename_from_cd(cd):
     """
     Get filename from content-disposition
@@ -19,8 +26,7 @@ def download_mp3(link):
     if link.endswith('.mp3'):
         r = requests.get(link, allow_redirects=True)
         filename = get_filename_from_cd(r.headers.get('content-disposition'))
-        if(filename != None):
-            open(filename, 'wb').write(r.content)
+        save_defined_file(filename, 2015)
         
 
 def get_urls(url, i):
