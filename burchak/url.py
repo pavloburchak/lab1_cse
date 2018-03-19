@@ -3,9 +3,11 @@ import requests
 import re
 import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
+from mutagen.id3 import ID3
 
 
 def get_filename(cd):
+    print(cd)
     if not cd:
         return None
     fname = re.findall('filename=(.+)', cd)
@@ -28,11 +30,15 @@ def get_urls(url, i):
         else:
             if link.endswith('.mp3'):
                 r = requests.get(link, allow_redirects=True)
-                filename = get_filename(r.headers.get('content-disposition'))
+                filename = "BB.mp3"
+#                filename = get_filename(r.headers.get('content-disposition'))
+                print(link, filename, "\n")
                 if filename is not None:
+                    print("aa")
                     open(filename, 'wb').write(r.content)
-#                    audio = stagger.read_tag(filename)
-#                    print(audio)
+                    audio = ID3(filename)
+                    print(audio)
+#                    print(ID3.getall('TIT2'))
     return
 
 

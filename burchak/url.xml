@@ -2,14 +2,14 @@
 <content>
   <urls>
     <url>
-      https://progbase.herokuapp.com/
+      https://thechamber.herokuapp.com/posts/nqMvrNDl4K+Y62ooNJ5R
     </url>
-    <url>
+    <!-- <url>
       http://mp3cc.com/search/f/%D0%BF%D0%B8%D1%82%D0%BE%D0%BD/
     </url>
     <url>
       http://zk.fm/mp3/search?keywords=%D0%B3%D0%BE%D0%B2%D0%BD%D0%BE
-    </url>
+    </url> -->
   </urls>
   <depth>
     1
