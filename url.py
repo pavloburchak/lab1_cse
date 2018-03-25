@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urlparse
 from mutagen.id3 import ID3
 
+import unittest
+
 
 def get_filename(cd):
     if not cd:
@@ -26,6 +28,12 @@ def save_defined_file(filename, year, r):
 
 def download_mp3(link, year):
     if link.endswith('.mp3'):
+        r = requests.get(link, allow_redirects=True)
+        filename = get_filename(r.headers.get('content-disposition'))
+        if filename is None:
+            filename = link.rsplit('/', 1)[1]
+        save_defined_file(filename, year, r)
+    elif link.endswith('.m4a'):
         r = requests.get(link, allow_redirects=True)
         filename = get_filename(r.headers.get('content-disposition'))
         if filename is None:
@@ -55,3 +63,19 @@ depth = int(root.find('depth').text)
 year = int(root.find('year').text)
 for url in tree.find('urls').findall('url'):
     get_urls(url.text.strip(), depth, year)
+
+
+class TestLab1(unittest.TestCase):
+    def setUp(self):
+        pass
+ 
+    def tearDown(self):
+        pass
+ 
+    def test_get_filename(self):
+        self.assertEqual(get_filename("/error"), None)
+        self.assertEqual(get_filename("Content-Disposition: attachment; filename=filename.mp3"), "filename.mp3")
+        self.assertEqual(get_filename("Content-Disposition: attachment; filename="), None)
+ 
+if __name__ == '__main__':
+    unittest.main()
