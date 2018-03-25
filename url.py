@@ -7,7 +7,8 @@ from mutagen.id3 import ID3
 try:
     from urllib.parse import urlparse
 except ImportError:
-     from urlparse import urlparse
+    from urlparse import urlparse
+
 
 def get_filename(cd):
     if not cd:
@@ -24,24 +25,21 @@ def save_defined_file(filename, year, r):
     print(audio["TDRC"], filename, "\n")
     if(int(str(audio["TDRC"])) <= year):
         os.remove(filename)
+        return False
+    return True
 
 
 def download_mp3(link, year):
-    if link.endswith('.mp3'):
+    if link.endswith('.mp3') or link.endswith('.m4a'):
         r = requests.get(link, allow_redirects=True)
         filename = get_filename(r.headers.get('content-disposition'))
         if filename is None:
             filename = link.rsplit('/', 1)[1]
-        save_defined_file(filename, year, r)
-        return filename
-    elif link.endswith('.m4a'):
-        r = requests.get(link, allow_redirects=True)
-        filename = get_filename(r.headers.get('content-disposition'))
-        if filename is None:
-            filename = link.rsplit('/', 1)[1]
-        save_defined_file(filename, year, r)
-        return filename
+        if save_defined_file(filename, year, r):
+            return filename
+        return None
     return None
+
 
 def get_urls(url, i, year):
     page = requests.get(url)
@@ -60,10 +58,10 @@ def get_urls(url, i, year):
             flag = True
     return flag
 
+
 tree = ET.parse('url.xml')
 root = tree.getroot()
 depth = int(root.find('depth').text)
 year = int(root.find('year').text)
 for url in tree.find('urls').findall('url'):
     get_urls(url.text.strip(), depth, year)
-
