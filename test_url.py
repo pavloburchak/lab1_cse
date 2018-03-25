@@ -14,7 +14,7 @@ class TestLab1(unittest.TestCase):
         '08._Writer_In_the_Dark_d7e0kn.mp3'
         filename = '08._Writer_In_the_Dark_d7e0kn.mp3'
         r = requests.get(link, allow_redirects=True)
-        self.assertTrue(url.save_defined_file(filename, 2017, r))
+        self.assertTrue(url.save_defined_file(filename, 2016, r))
         self.assertFalse(url.save_defined_file(filename, 2048, r))
 
     def test_download_mp3(self):
@@ -22,8 +22,8 @@ class TestLab1(unittest.TestCase):
         '08._Writer_In_the_Dark_d7e0kn.mp3'
         link2 = 'https://res.cloudinary.com/hvldskieo/raw/upload/v1514037631/' + \
         '05._Liability_qt1tdv'
-        self.assertEqual(url.download_mp3(link1, 2017), '08._Writer_In_the_Dark_d7e0kn.mp3')
-        self.assertEqual(url.download_mp3(link2, 2017), None)
+        self.assertEqual(url.download_mp3(link1, 2016), '08._Writer_In_the_Dark_d7e0kn.mp3')
+        self.assertEqual(url.download_mp3(link2, 2016), None)
 
     def test_get_filename(self):
         self.assertEqual(url.get_filename(None), None)
