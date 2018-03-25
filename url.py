@@ -9,9 +9,6 @@ try:
 except ImportError:
      from urlparse import urlparse
 
-import unittest
-
-
 def get_filename(cd):
     if not cd:
         return None
@@ -49,6 +46,7 @@ def download_mp3(link, year):
 def get_urls(url, i, year):
     page = requests.get(url)
     webpage = html.fromstring(page.content)
+    flag = False
     for link in webpage.xpath('//a/@href'):
         if i > 1:
             if re.match(r"https?:\/\/.*", link):
@@ -59,6 +57,8 @@ def get_urls(url, i, year):
                 get_urls(domain+link, i-1)
         else:
             download_mp3(link, year)
+            flag = True
+    return flag
 
 tree = ET.parse('url.xml')
 root = tree.getroot()
@@ -67,24 +67,3 @@ year = int(root.find('year').text)
 for url in tree.find('urls').findall('url'):
     get_urls(url.text.strip(), depth, year)
 
-
-class TestLab1(unittest.TestCase):
-    def setUp(self):
-        pass
- 
-    def tearDown(self):
-        pass
- 
-    def test_get_filename(self):
-        self.assertEqual(get_filename("/error"), None)
-        self.assertEqual(get_filename("Content-Disposition: attachment; filename=filename.mp3"), "filename.mp3")
-        self.assertEqual(get_filename("Content-Disposition: attachment; filename="), None)
-    def test_download_mp3(self):
-        link1 = "https://res.cloudinary.com/hvldskieo/raw/upload/v1521464696/01_Stuck_on_the_puzzle_intro_osli5a.mp3"
-        link2 = "https://res.cloudinary.com/hvldskieo/raw/upload/v1521464696/01_Stuck_on_the_puzzle_intro_osli5a"
-        self.assertEqual(download_mp3(link1, 2017), "01_Stuck_on_the_puzzle_intro_osli5a.mp3")
-        self.assertEqual(download_mp3(link2, 2017), None)
-
-if __name__ == '__main__':
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestLab1)
-    unittest.TextTestRunner(verbosity=2).run(suite)
