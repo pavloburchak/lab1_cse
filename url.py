@@ -3,8 +3,11 @@ import requests
 import re
 import os
 import xml.etree.ElementTree as ET
-from urllib.parse import urlparse
 from mutagen.id3 import ID3
+try:
+    from urllib.parse import urlparse
+except ImportError:
+     from urlparse import urlparse
 
 import unittest
 
@@ -33,13 +36,15 @@ def download_mp3(link, year):
         if filename is None:
             filename = link.rsplit('/', 1)[1]
         save_defined_file(filename, year, r)
+        return filename
     elif link.endswith('.m4a'):
         r = requests.get(link, allow_redirects=True)
         filename = get_filename(r.headers.get('content-disposition'))
         if filename is None:
             filename = link.rsplit('/', 1)[1]
         save_defined_file(filename, year, r)
-
+        return filename
+    return None
 
 def get_urls(url, i, year):
     page = requests.get(url)
@@ -54,8 +59,6 @@ def get_urls(url, i, year):
                 get_urls(domain+link, i-1)
         else:
             download_mp3(link, year)
-    return
-
 
 tree = ET.parse('url.xml')
 root = tree.getroot()
@@ -76,6 +79,12 @@ class TestLab1(unittest.TestCase):
         self.assertEqual(get_filename("/error"), None)
         self.assertEqual(get_filename("Content-Disposition: attachment; filename=filename.mp3"), "filename.mp3")
         self.assertEqual(get_filename("Content-Disposition: attachment; filename="), None)
- 
+    def test_download_mp3(self):
+        link1 = "https://res.cloudinary.com/hvldskieo/raw/upload/v1521464696/01_Stuck_on_the_puzzle_intro_osli5a.mp3"
+        link2 = "https://res.cloudinary.com/hvldskieo/raw/upload/v1521464696/01_Stuck_on_the_puzzle_intro_osli5a"
+        self.assertEqual(download_mp3(link1, 2017), "01_Stuck_on_the_puzzle_intro_osli5a.mp3")
+        self.assertEqual(download_mp3(link2, 2017), None)
+
 if __name__ == '__main__':
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestLab1)
+    unittest.TextTestRunner(verbosity=2).run(suite)
