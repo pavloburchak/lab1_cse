@@ -24,6 +24,7 @@ def save_defined_file(filename, year, r):
     audio = ID3(filename)
     print(audio["TDRC"], filename, "\n")
     if(int(str(audio["TDRC"])) <= year):
+        print("hello there")
         os.remove(filename)
         return False
     return True
