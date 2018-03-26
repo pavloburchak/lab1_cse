@@ -24,7 +24,6 @@ def save_defined_file(filename, year, r):
     audio = ID3(filename)
     print(audio["TDRC"], filename, "\n")
     if(int(str(audio["TDRC"])) <= year):
-        print("hello there")
         os.remove(filename)
         return False
     return True
@@ -38,26 +37,26 @@ def download_mp3(link, year):
             filename = link.rsplit('/', 1)[1]
         if save_defined_file(filename, year, r):
             return filename
-        return None
-    return None
+        return False
+    return False
 
 
 def get_urls(url, i, year):
     page = requests.get(url)
     webpage = html.fromstring(page.content)
-    flag = False
+    found = False
     for link in webpage.xpath('//a/@href'):
+        if download_mp3(link, year):
+            found = True
         if i > 1:
             if re.match(r"https?:\/\/.*", link):
-                get_urls(link, i-1)
+                get_urls(link, i-1, year)
             else:
                 parsed_uri = urlparse(url[:len(url)-1])
                 domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
-                get_urls(domain+link, i-1)
-        else:
-            download_mp3(link, year)
-            flag = True
-    return flag
+                print(link)
+                get_urls(domain[:len(domain)-1]+link, i-1, year)
+    return found
 
 
 tree = ET.parse('url.xml')
